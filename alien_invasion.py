@@ -1,6 +1,7 @@
 import sys
 import pygame
 import settings
+import ship
 
 
 class AllienInvasion:
@@ -14,20 +15,28 @@ class AllienInvasion:
         self.screen = pygame.display.set_mode(
             (self.settings.screen_width, self.settings.screen_height))
         pygame.display.set_caption("Allien Invasion")
-        pygame.bg_color = self.settings.bg_color
+        self.bg_color = self.settings.bg_color
+        self.ship = ship.Ship(self)
+
+    def _check_events(self):
+        """Respond to keypress and mouse events."""
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                sys.exit()
+
+    def _update_screen(self):
+        """"""
+        # Redraw the screen during each pass through the loop.
+        self.screen.fill(self.bg_color)
+        self.ship.blitme()
+        # Make the most recently drawn screen visible.
+        pygame.display.flip()
 
     def run_game(self):
         """Start main loop for the game."""
         while True:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    sys.exit()
-
-            # Redraw the screen during each pass through the loop.
-            pygame.screen.fill(self.bg_color)
-
-            # Make the most recently drawn screen visible.
-            pygame.display.flip()
+            self._check_events()
+            self._update_screen()
 
 
 if __name__ == '__main__':
