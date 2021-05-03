@@ -3,6 +3,7 @@ import pygame
 import settings
 import ship
 import bullet
+from alien import Alien
 
 
 class AllienInvasion:
@@ -18,6 +19,13 @@ class AllienInvasion:
         pygame.display.set_caption("Allien Invasion")
         self.ship = ship.Ship(self)
         self.bullets = pygame.sprite.Group()
+        self.aliens = pygame.sprite.Group()
+        self._create_fleet()
+
+    def _create_fleet(self):
+        """Create the fleet of aliens."""
+        alien = Alien(self)
+        self.aliens.add(alien)
 
     def _fire_bullet(self):
         """Create a new bullet and add it to the group of bullets."""
@@ -68,6 +76,7 @@ class AllienInvasion:
         self.ship.blitme()
         for bullet in self.bullets:
             bullet.draw()
+        self.aliens.draw(self.screen)
         # Make the most recently drawn screen visible.
         pygame.display.flip()
 
