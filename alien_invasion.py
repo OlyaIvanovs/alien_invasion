@@ -9,6 +9,7 @@ import bullet
 from alien import Alien
 from game_stat import GameState
 from button import Button
+from scoreboard import Scoreboard
 
 
 class AllienInvasion:
@@ -28,6 +29,7 @@ class AllienInvasion:
         self.bullets = pygame.sprite.Group()
         self.aliens = pygame.sprite.Group()
         self._create_fleet()
+        self.scoreboard = Scoreboard(self)
 
     def _check_fleet_edges(self):
         """Respond if any alien meets the edge of the screen."""
@@ -79,9 +81,12 @@ class AllienInvasion:
         """Start a game if button Play is pressed."""
         button_clicked = self.button.rect.collidepoint(mouse_pos)
         if button_clicked and not self.stats.game_active:
+            # Reset the game settings.
+            self.settings.initialize_dynamic_settings()
             pygame.mouse.set_visible(False)
             self.stats.reset_stat()
             self.stats.game_active = True
+            self.scoreboard.prep_score()
 
             # Delete all remaining bullets and aliens
             self.bullets.empty()
@@ -126,10 +131,17 @@ class AllienInvasion:
         collisions = pygame.sprite.groupcollide(
             self.bullets, self.aliens, True, True)
 
+        if collisions:
+            for aliens in collisions.values():
+                self.stats.score += self.settings.alien_score * len(aliens)
+                self.scoreboard.check_high_score()
+            self.scoreboard.prep_score()
+
         if not self.aliens:
             # Destroy existing bullets and create a new fleet
             self.bullets.empty()
             self._create_fleet()
+            self.settings.increase_speed()
 
     def _check_aliens_bottom(self):
         screen_rect = self.screen.get_rect()
@@ -182,6 +194,10 @@ class AllienInvasion:
         for bullet in self.bullets:
             bullet.draw()
         self.aliens.draw(self.screen)
+
+        # Draw the score information.
+        self.scoreboard.show_score()
+
         if not self.stats.game_active:
             self.button.draw_button()
 
