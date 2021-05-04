@@ -8,6 +8,7 @@ import ship
 import bullet
 from alien import Alien
 from game_stat import GameState
+from button import Button
 
 
 class AllienInvasion:
@@ -22,6 +23,7 @@ class AllienInvasion:
             (self.settings.screen_width, self.settings.screen_height))
         pygame.display.set_caption("Allien Invasion")
         self.stats = GameState(self)
+        self.button = Button(self, "Play game")
         self.ship = ship.Ship(self)
         self.bullets = pygame.sprite.Group()
         self.aliens = pygame.sprite.Group()
@@ -73,6 +75,21 @@ class AllienInvasion:
             new_bullet = bullet.Bullet(self)
             self.bullets.add(new_bullet)
 
+    def _check_play_button(self, mouse_pos):
+        """Start a game if button Play is pressed."""
+        button_clicked = self.button.rect.collidepoint(mouse_pos)
+        if button_clicked and not self.stats.game_active:
+            pygame.mouse.set_visible(False)
+            self.stats.reset_stat()
+            self.stats.game_active = True
+
+            # Delete all remaining bullets and aliens
+            self.bullets.empty()
+            self.aliens.empty()
+
+            self._create_fleet()
+            self.ship.center_ship()
+
     def _check_keydown_events(self, event):
         """Respond to key keypresses."""
         if event.key == pygame.K_RIGHT:
@@ -100,6 +117,9 @@ class AllienInvasion:
                 self._check_keydown_events(event)
             elif event.type == pygame.KEYUP:
                 self._check_keyup_events(event)
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                mouse_pos = pygame.mouse.get_pos()
+                self._check_play_button(mouse_pos)
 
     def _check_bullet_alien_collision(self):
         """Check for any bullet that have hit aliens. If so delete this bullet and the alien."""
@@ -133,6 +153,7 @@ class AllienInvasion:
             sleep(0.5)
         else:
             self.stats.game_active = False
+            pygame.mouse.set_visible(True)
 
     def _update_bullets(self):
         """Update position of bullets"""
@@ -161,6 +182,9 @@ class AllienInvasion:
         for bullet in self.bullets:
             bullet.draw()
         self.aliens.draw(self.screen)
+        if not self.stats.game_active:
+            self.button.draw_button()
+
         # Make the most recently drawn screen visible.
         pygame.display.flip()
 
@@ -173,7 +197,8 @@ class AllienInvasion:
                 self.ship.update()
                 self._update_bullets()
                 self._update_aliens()
-                self._update_screen()
+
+            self._update_screen()
 
 
 if __name__ == '__main__':
