@@ -13,10 +13,10 @@ class Settings:
         self.bullets_allowed = 3
 
         # Alien settings
-        self.fleet_drop_speed = 50
+        self.fleet_drop_speed = 20
 
         # Game settings
-        self.ship_limit = 1
+        self.ship_limit = 3
 
         # How quickly the game speeds up
         self.speedup_scale = 1.1
@@ -27,7 +27,7 @@ class Settings:
     def initialize_dynamic_settings(self):
         """Initialize the settings that change throught the game."""
         self.ship_speed = 1.5
-        self.alien_speed = 0.5
+        self.alien_speed = 0.2
         self.bullet_speed = 2.0
 
         self.alien_score = 50

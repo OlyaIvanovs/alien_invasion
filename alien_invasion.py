@@ -87,6 +87,8 @@ class AllienInvasion:
             self.stats.reset_stat()
             self.stats.game_active = True
             self.scoreboard.prep_score()
+            self.scoreboard.prep_level()
+            self.scoreboard.prep_ships()
 
             # Delete all remaining bullets and aliens
             self.bullets.empty()
@@ -141,6 +143,8 @@ class AllienInvasion:
             # Destroy existing bullets and create a new fleet
             self.bullets.empty()
             self._create_fleet()
+            self.stats.level += 1
+            self.scoreboard.prep_level()
             self.settings.increase_speed()
 
     def _check_aliens_bottom(self):
@@ -154,6 +158,7 @@ class AllienInvasion:
         if self.stats.ships_left > 0:
             # Decrement left ships
             self.stats.ships_left -= 1
+            self.scoreboard.prep_ships()
 
             # Delete all remaining bullets and aliens
             self.bullets.empty()
